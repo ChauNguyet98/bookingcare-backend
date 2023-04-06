@@ -1,4 +1,3 @@
-import pool from "../configs/connectDB";
 import userService from "../services/userService";
 
 let getAllUsers = async (req, res) => {

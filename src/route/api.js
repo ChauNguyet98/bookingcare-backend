@@ -1,9 +1,12 @@
 import express from "express";
+import authController from "../controllers/authController";
 import userController from "../controllers/userController";
 
 let router = express.Router();
 
 const initApiRoute = (app) => {
+  router.get("/login", authController.login);
+
   router.get("/users", userController.getAllUsers);
 
   // router.post("/users", apiController.addUser);
