@@ -5,7 +5,7 @@ import userController from "../controllers/userController";
 let router = express.Router();
 
 const initApiRoute = (app) => {
-  router.get("/login", authController.login);
+  router.post("/login", authController.login);
 
   router.get("/users", userController.getAllUsers);
 

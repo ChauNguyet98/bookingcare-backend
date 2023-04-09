@@ -2,6 +2,7 @@ import userService from "../services/userService";
 
 let getAllUsers = async (req, res) => {
   const data = await userService.getAllUsers();
+
   return res.status(200).json({
     message: "OK",
     data: data,
