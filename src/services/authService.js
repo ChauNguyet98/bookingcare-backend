@@ -1,5 +1,4 @@
 import pool from "../configs/connectDB";
-const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 
 let handleUserLogin = async (email, password) => {
@@ -22,6 +21,11 @@ let handleUserLogin = async (email, password) => {
         };
 
         const token = jwt.sign(data, jwtSecretKey);
+        await pool.execute("UPDATE `users` SET token = ? WHERE `email` = ?", [
+          token,
+          user[0].email,
+        ]);
+
         userData = {
           data: {
             token: token,
