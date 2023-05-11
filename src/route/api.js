@@ -8,19 +8,16 @@ let router = express.Router();
 const initApiRoute = (app) => {
   router.post("/login", authController.login);
 
+  // User Management
   router.get("/users", userController.getAllUsers);
 
-  router.get("/welcome", auth, (req, res) => {
-    res.status(200).send("Welcome 🙌 ");
-  });
+  router.post("/user", userController.addUser);
 
-  // router.post("/users", apiController.addUser);
+  router.get("/user/:id", userController.detailUser);
 
-  // router.get("/users/:id", apiController.detailUser);
+  router.put("/user/:id", userController.updateUser);
 
-  // router.put("/users/:id", apiController.updateUser);
-
-  // router.delete("/users/:id", apiController.deleteUser);
+  router.delete("/user/:id", userController.deleteUser);
 
   return app.use("/api/v1", router);
 };

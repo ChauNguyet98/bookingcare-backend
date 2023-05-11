@@ -1,8 +1,12 @@
 import pool from "../configs/connectDB";
+import * as _ from "lodash";
 
 let getAllUsers = async () => {
   const [data, fields] = await pool.execute("SELECT * FROM `users`");
-  return data;
+  const users = _.map(data, (object) => {
+    return _.omit(object, ["password", "token", "image"]);
+  });
+  return users;
 };
 
 let addUser = async (req, res) => {

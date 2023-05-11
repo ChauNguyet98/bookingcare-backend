@@ -1,6 +1,20 @@
 import userService from "../services/userService";
 
 let getAllUsers = async (req, res) => {
+  let [users, fields] = await pool.execute(
+    "SELECT * FROM `users` WHERE `token` = ?",
+    [req.headers["x-token"]]
+  );
+
+  if (!req.headers["x-token"] || (users && users.length === 0)) {
+    return res.status(401).json({
+      error: {
+        errorCode: 401,
+        message: "Authentication failed!",
+      },
+    });
+  }
+
   const data = await userService.getAllUsers();
 
   return res.status(200).json({
