@@ -1,12 +1,10 @@
+import pool from "../configs/connectDB";
 import userService from "../services/userService";
+import authService from "../services/authService";
 
 let getAllUsers = async (req, res) => {
-  let [users, fields] = await pool.execute(
-    "SELECT * FROM `users` WHERE `token` = ?",
-    [req.headers["x-token"]]
-  );
-
-  if (!req.headers["x-token"] || (users && users.length === 0)) {
+  const isTokenExist = await authService.checkTokenExist(req);
+  if (!isTokenExist) {
     return res.status(401).json({
       error: {
         errorCode: 401,
@@ -16,7 +14,6 @@ let getAllUsers = async (req, res) => {
   }
 
   const data = await userService.getAllUsers();
-
   return res.status(200).json({
     message: "OK",
     data: data,
@@ -24,6 +21,26 @@ let getAllUsers = async (req, res) => {
 };
 
 let addUser = async (req, res) => {
+  const isTokenExist = await authService.checkTokenExist(req);
+  if (!isTokenExist) {
+    return res.status(401).json({
+      error: {
+        errorCode: 401,
+        message: "Authentication failed!",
+      },
+    });
+  }
+
+  const isEmailExist = await userService.checkEmailExist(req.body.email);
+  if (isEmailExist) {
+    return res.status(500).json({
+      error: {
+        errorCode: 500,
+        message: "User already exists!",
+      },
+    });
+  }
+
   const result = await userService.addUser(req, res);
   return res.status(result.status).json({
     message: result.message,
@@ -31,7 +48,26 @@ let addUser = async (req, res) => {
 };
 
 let detailUser = async (req, res) => {
+  const isTokenExist = await authService.checkTokenExist(req);
+  if (!isTokenExist) {
+    return res.status(401).json({
+      error: {
+        errorCode: 401,
+        message: "Authentication failed!",
+      },
+    });
+  }
+
   const data = await userService.detailUser(req, res);
+  if (!data) {
+    return res.status(404).json({
+      error: {
+        errorCode: 404,
+        message: "User isn't exist!",
+      },
+    });
+  }
+
   return res.status(200).json({
     message: "OK",
     data: data,
@@ -39,6 +75,26 @@ let detailUser = async (req, res) => {
 };
 
 let updateUser = async (req, res) => {
+  const isTokenExist = await authService.checkTokenExist(req);
+  if (!isTokenExist) {
+    return res.status(401).json({
+      error: {
+        errorCode: 401,
+        message: "Authentication failed!",
+      },
+    });
+  }
+
+  const data = await userService.detailUser(req, res);
+  if (!data) {
+    return res.status(404).json({
+      error: {
+        errorCode: 404,
+        message: "User isn't exist!",
+      },
+    });
+  }
+
   let result = await userService.updateUser(req, res);
   return res.status(result.status).json({
     message: result.message,
@@ -46,6 +102,16 @@ let updateUser = async (req, res) => {
 };
 
 let deleteUser = async (req, res) => {
+  const isTokenExist = await authService.checkTokenExist(req);
+  if (!isTokenExist) {
+    return res.status(401).json({
+      error: {
+        errorCode: 401,
+        message: "Authentication failed!",
+      },
+    });
+  }
+
   const result = await userService.deleteUser(req, res);
   return res.status(result.status).json({
     message: result.message,

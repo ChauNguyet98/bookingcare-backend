@@ -30,8 +30,9 @@ let addUser = async (req, res) => {
   }
 
   await pool.execute(
-    "INSERT INTO `users` (`id`, `email`, `password`, `firstName`, `lastName`, `address`, `gender`, `roleId`, `phoneNumber`, `positionId`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO `users` (`id`, `email`, `password`, `firstName`, `lastName`, `address`, `gender`, `roleId`, `phoneNumber`, `positionId`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     [
+      null,
       email,
       password,
       firstName,
@@ -82,19 +83,8 @@ let updateUser = async (req, res) => {
   }
 
   await pool.execute(
-    "UPDATE `users` SET email = ?, password = ?, firstName = ?, lastName = ?, address = ?, gender = ?, roleId = ?, phoneNumber = ?, positionId = ? WHERE id = ?",
-    [
-      email,
-      password,
-      firstName,
-      lastName,
-      address,
-      gender,
-      roleId,
-      phoneNumber,
-      positionId,
-      id,
-    ]
+    "UPDATE `users` SET firstName = ?, lastName = ?, address = ?, gender = ?, roleId = ?, phoneNumber = ?, positionId = ? WHERE id = ?",
+    [firstName, lastName, address, gender, roleId, phoneNumber, positionId, id]
   );
 
   return {
@@ -120,10 +110,19 @@ let deleteUser = async (req, res) => {
   }
 };
 
+let checkEmailExist = async (email) => {
+  let [user, fields] = await pool.execute(
+    "SELECT * FROM `users` WHERE `email` = ?",
+    [email]
+  );
+  return user[0] ? true : false;
+};
+
 module.exports = {
   getAllUsers,
   addUser,
   detailUser,
   updateUser,
   deleteUser,
+  checkEmailExist,
 };

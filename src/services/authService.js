@@ -67,7 +67,20 @@ let checkEmailExist = async (email) => {
   return user[0] ? true : false;
 };
 
+let checkTokenExist = async (req) => {
+  if (!req.headers["x-token"]) return false;
+
+  let [users, fields] = await pool.execute(
+    "SELECT * FROM `users` WHERE `token` = ?",
+    [req.headers["x-token"]]
+  );
+  if (users && users.length === 0) return false;
+
+  return true;
+};
+
 module.exports = {
   handleUserLogin,
   checkEmailExist,
+  checkTokenExist,
 };
